@@ -1,11 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
     const video = document.getElementById('camera-stream');
-    const canvas = document.getElementById('barcode-canvas');
-    const context = canvas.getContext('2d');
     const itemNameElement = document.getElementById('item-name');
     const itemPriceElement = document.getElementById('item-price');
 
+    // Function to start the camera and handle permission
     function startScanner() {
+        // Request access to the camera
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+            .then(function(stream) {
+                video.srcObject = stream; // Set the video stream to the video element
+                video.play();
+                startBarcodeScanner();
+            })
+            .catch(function(err) {
+                console.error("Error accessing camera: ", err);
+                alert("Camera access is required for scanning. Please allow camera access.");
+            });
+    }
+
+    function startBarcodeScanner() {
         Quagga.init({
             inputStream: {
                 type: "LiveStream",
@@ -19,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, function(err) {
             if (err) {
-                console.error(err);
+                console.error("QuaggaJS initialization error:", err);
                 return;
             }
             Quagga.start();
@@ -33,14 +46,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function fetchItemDetails(barcode) {
-        // Local database of items and prices
         const database = {
             "556378203280": { name: "Pika", price: "RM 0.30" },
             "556126668200": { name: "Vaseline expert care", price: "RM 34.00" },
-            // Add more barcodes and item details here...
         };
 
-        // Look up the barcode in the database
         const item = database[barcode];
         if (item) {
             itemNameElement.textContent = `Item: ${item.name}`;
@@ -51,5 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Start camera and barcode scanner
     startScanner();
 });
