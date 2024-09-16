@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             },
             decoder: {
-                readers: ["ean_reader", "code_128_reader", "upc_reader"] // Support multiple barcode types
+                readers: ["ean_reader", "upc_reader"] // Ensure UPC and EAN barcodes are supported
             }
         }, function(err) {
             if (err) {
@@ -40,18 +40,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
         Quagga.onDetected(function(result) {
             const barcode = result.codeResult.code;
-            console.log("Detected Barcode: ", barcode);
-            fetchItemDetails(barcode);
+            console.log("Detected Barcode:", barcode);
+
+            // Only process barcodes that start with "9" (for Malaysia)
+            if (barcode.startsWith("9")) {
+                fetchItemDetails(barcode);
+            } else {
+                itemNameElement.textContent = "Non-Malaysian product";
+                itemPriceElement.textContent = "---";
+            }
         });
     }
 
     function fetchItemDetails(barcode) {
+        // Local database of Malaysian items and prices (barcodes starting with "9")
         const database = {
-            "556378203280": { name: "Pika", price: "RM 0.30" },
-            "556126668200": { name: "Vaseline expert care", price: "RM 34.00" },
+            "955378203280": { name: "Malaysian Pika", price: "RM 0.30" },
+            "955126668200": { name: "Vaseline Malaysia", price: "RM 34.00" },
+            // Add more Malaysian barcodes and item details here...
         };
 
-        const item = database[barcode];
+        // Normalize the barcode (trim leading zeros for comparison)
+        const normalizedBarcode = barcode.replace(/^0+/, ''); // Remove leading zeros
+
+        // Check if the barcode is in the database
+        const item = database[barcode] || database[normalizedBarcode];
         if (item) {
             itemNameElement.textContent = `Item: ${item.name}`;
             itemPriceElement.textContent = `Price: ${item.price}`;
