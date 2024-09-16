@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Checker with Local Barcode Database</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Price Checker with Camera</h1>
+    <video id="camera-stream" autoplay></video>
+    <canvas id="barcode-canvas" style="display:none;"></canvas>
+    <p id="item-name">Item: ---</p>
+    <p id="item-price">Price: ---</p>
+
+    <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
